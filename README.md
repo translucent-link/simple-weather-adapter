@@ -1,44 +1,60 @@
-# Chainlink NodeJS External Adapter Template
-
-This template provides a basic framework for developing Chainlink external adapters in NodeJS. Comments are included to assist with development and testing of the external adapter. Once the API-specific values (like query parameters and API key authentication) have been added to the adapter, it is very easy to add some tests to verify that the data will be correctly formatted when returned to the Chainlink node. There is no need to use any additional frameworks or to run a Chainlink node in order to test the adapter.
-
-## Creating your own adapter from this template
-
-Clone this repo and change "ExternalAdapterProject" below to the name of your project
-
-```bash
-git clone https://github.com/thodges-gh/CL-EA-NodeJS-Template.git ExternalAdapterProject
-```
-
-Enter into the newly-created directory
-
-```bash
-cd ExternalAdapterProject
-```
-
-You can remove the existing git history by running:
-
-```bash
-rm -rf .git
-```
+# Chainlink Simple Weather External Adapter 
 
 See [Install Locally](#install-locally) for a quickstart
 
 ## Input Params
 
-- `base`, `from`, or `coin`: The symbol of the currency to query
-- `quote`, `to`, or `market`: The symbol of the currency to convert to
+- `q`, `city`, or `town`: The location your fetching weather data for
 
 ## Output
 
 ```json
 {
- "jobRunID": "278c97ffadb54a5bbb93cfec5f7b5503",
- "data": {
-  "USD": 164.02,
-  "result": 164.02
- },
- "statusCode": 200
+	"jobRunID": 0,
+	"data": {
+		"coord": {
+			"lon": -71.0598,
+			"lat": 42.3584
+		},
+		"weather": [{
+			"id": 804,
+			"main": "Clouds",
+			"description": "overcast clouds",
+			"icon": "04d"
+		}],
+		"base": "stations",
+		"main": {
+			"temp": 287.15,
+			"feels_like": 287.06,
+			"temp_min": 285.96,
+			"temp_max": 288.36,
+			"pressure": 1013,
+			"humidity": 94
+		},
+		"visibility": 10000,
+		"wind": {
+			"speed": 8.23,
+			"deg": 10
+		},
+		"clouds": {
+			"all": 100
+		},
+		"dt": 1664995352,
+		"sys": {
+			"type": 2,
+			"id": 2013408,
+			"country": "US",
+			"sunrise": 1664966731,
+			"sunset": 1665008372
+		},
+		"timezone": -14400,
+		"id": 4930956,
+		"name": "Boston",
+		"cod": 200,
+		"result": 287.15
+	},
+	"result": 287.15,
+	"statusCode": 200
 }
 ```
 
@@ -69,7 +85,7 @@ yarn start
 ## Call the external adapter/API server
 
 ```bash
-curl -X POST -H "content-type:application/json" "http://localhost:8080/" --data '{ "id": 0, "data": { "from": "ETH", "to": "USD" } }'
+curl -X POST -H "content-type:application/json" "http://localhost:8080/" --data '{ "id": 0, "data": { "q": "Boston" } }'
 ```
 
 ## Docker
@@ -77,14 +93,15 @@ curl -X POST -H "content-type:application/json" "http://localhost:8080/" --data 
 If you wish to use Docker to run the adapter, you can build the image by running the following command:
 
 ```bash
-docker build . -t external-adapter
+docker build . -t weather-adapter
 ```
 
 Then run it with:
 
 ```bash
-docker run -p 8080:8080 -it external-adapter:latest
+docker run -e API_KEY=<APIKEY> --rm -p 8080:8080 -it weather-adapter:latest
 ```
+You can get an API key [here](https://home.openweathermap.org/api_keys). A word of warning: it took about 20minutes for the API key to become active after creating it.
 
 ## Serverless hosts
 
